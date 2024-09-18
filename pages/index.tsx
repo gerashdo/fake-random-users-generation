@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { User } from "@/interfaces/user"
 import { Region } from "@/interfaces/region"
 import { Toolbar } from "@/components/Toolbar"
@@ -7,13 +7,44 @@ import { Toolbar } from "@/components/Toolbar"
 export default function Home() {
 
   const [region, setRegion] = useState<Region>('en_US')
-  const [seed, setSeed] = useState<string>('')
-  const [sliderValue, setSliderValue] = useState<number>(50)
-  const [errors, setErrors] = useState('0')
+  const [seed, setSeed] = useState<string>('0')
+  const [sliderValue, setSliderValue] = useState<string>('0')
+  const [errorsInput, setErrorsInput] = useState<string>('0')
+  const [errors, setErrors] = useState<string>('0')
   const [data, setData] = useState<User[]>([])
+  const [, setLoading] = useState(false)
+
+  const fetchUsers = async (pageNum: number) => {
+    setLoading(true);
+    const response = await fetch(`/api/generateUsers?region=${region}&errors=${errors}&seed=${seed}&page=${pageNum}`)
+    const data = await response.json();
+    setData((prev) => [...prev, ...data.users]);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    // Fetch initial data
+    console.log('fetching data')
+    setData([]);
+    fetchUsers(1);
+  }, [region, errors, seed, sliderValue]);
+
+  const onChangeErrorsSlider = (value: string) => {
+    setSliderValue(value)
+    setErrorsInput(value)
+    setErrors(value)
+  }
+
+  const onChangeErrorsInput = (value: string) => {
+    setErrorsInput(value)
+    if (parseInt(value) >= 0 && parseInt(value) <= 10) {
+      setSliderValue(value)
+    }
+    setErrors(value)
+  }
 
   const generateRandomSeed = () => {
-    // setSeed(Math.random().toString(36).substr(2, 9))
+    setSeed(Math.floor(Math.random()*10000).toString())
   }
 
   return (
@@ -22,17 +53,17 @@ export default function Home() {
         region={region}
         onRegionChange={setRegion}
         sliderValue={sliderValue}
-        onSliderChange={setSliderValue}
-        errors={errors}
-        onErrorsChange={setErrors}
+        onSliderChange={onChangeErrorsSlider}
+        errorsInputValue={errorsInput}
+        onInputErrorsChange={onChangeErrorsInput}
         seed={seed}
         onSeedChange={setSeed}
         onGenerateRandomSeed={generateRandomSeed}
       />
 
       <div className="border rounded-md overflow-hidden shadow-md">
-        <div className="bg-gray-50 p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-700">Data Table</h2>
+        <div className="bg-gray-50 p-4 border-b text-center">
+          <h2 className="text-lg font-semibold text-gray-700 uppercase">Users</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
