@@ -10,6 +10,7 @@ interface ToolbarProps {
   seed: string;
   onSeedChange: (seed: string) => void;
   onGenerateRandomSeed: () => void;
+  isLoading: boolean;
 }
 
 export const Toolbar = ({
@@ -22,6 +23,7 @@ export const Toolbar = ({
   seed,
   onSeedChange,
   onGenerateRandomSeed,
+  isLoading,
 }: ToolbarProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -32,6 +34,7 @@ export const Toolbar = ({
           value={region}
           onChange={(e) => onRegionChange(e.target.value as Region)}
           className="block w-full px-3 py-2 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none"
+          disabled={isLoading}
         >
           <option value="">Select region</option>
           {Object.entries(regionNames).map(([key, value]) => (
@@ -50,6 +53,7 @@ export const Toolbar = ({
           value={sliderValue}
           onChange={(e) => onSliderChange(e.target.value)}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          disabled={isLoading}
         />
         <div className="text-sm text-gray-500 text-center">{sliderValue}</div>
       </div>
@@ -65,6 +69,7 @@ export const Toolbar = ({
           value={errorsInputValue}
           onChange={(e) => onInputErrorsChange(e.target.value)}
           className="block w-full px-3 py-2 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none"
+          disabled={isLoading}
         />
       </div>
 
@@ -78,10 +83,12 @@ export const Toolbar = ({
             value={seed}
             onChange={(e) => onSeedChange(e.target.value)}
             className="flex-grow px-3 py-2 text-base border border-gray-300 rounded-l-md focus:outline-none"
+            disabled={isLoading}
           />
           <button
             onClick={onGenerateRandomSeed}
             className="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-700 hover:bg-gray-100 focus:outline-none"
+            disabled={isLoading}
           >
             Generate
           </button>
