@@ -5,7 +5,6 @@ import { Toolbar } from "@/components/Toolbar"
 
 
 export default function Home() {
-
   const [region, setRegion] = useState<Region>('en_US')
   const [seed, setSeed] = useState<string>('0')
   const [sliderValue, setSliderValue] = useState<string>('0')
@@ -23,12 +22,9 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // Fetch initial data
-    console.log('fetching data')
-    setData([]);
-    fetchUsers(1);
-    fetchUsers(2);
-  }, [region, errors, seed]);
+    setData([])
+    fetchUsers(1).then(() => fetchUsers(2))
+  }, [region, errors, seed])
 
   const onChangeErrorsSlider = (value: string) => {
     setSliderValue(value)
