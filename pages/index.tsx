@@ -27,7 +27,8 @@ export default function Home() {
     console.log('fetching data')
     setData([]);
     fetchUsers(1);
-  }, [region, errors, seed, sliderValue]);
+    fetchUsers(2);
+  }, [region, errors, seed]);
 
   const onChangeErrorsSlider = (value: string) => {
     setSliderValue(value)
