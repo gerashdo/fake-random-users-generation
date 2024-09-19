@@ -12,7 +12,7 @@ export const TableContentRow = ({ user, index}: TableContentRowProps) => {
     <motion.tr
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      transition={{ duration: 0.7, delay: 0.2 }}
       className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
     >
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>

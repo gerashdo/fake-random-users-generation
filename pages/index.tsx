@@ -5,6 +5,7 @@ import { Toolbar } from "@/components/Toolbar"
 import { User } from "@/interfaces/user"
 import { Region } from "@/interfaces/region"
 import { useDebouncedValue } from "@/hooks/useDebounce"
+import { Loader } from "@/components/Loader"
 
 
 export default function Home() {
@@ -93,7 +94,7 @@ export default function Home() {
           dataLength={data.length}
           next={loadMoreData}
           hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
+          loader={<Loader />}
           endMessage={<p>No more users to load.</p>}
         >
           <table className="min-w-full divide-y divide-gray-200">
