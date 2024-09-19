@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
+import { TableContentRow } from "@/components/TableContentRow"
+import { Toolbar } from "@/components/Toolbar"
 import { User } from "@/interfaces/user"
 import { Region } from "@/interfaces/region"
-import { Toolbar } from "@/components/Toolbar"
 import { useDebouncedValue } from "@/hooks/useDebounce"
+
 
 export default function Home() {
   const [region, setRegion] = useState<Region>("en_US")
@@ -12,17 +14,21 @@ export default function Home() {
   const [errorsInput, setErrorsInput] = useState<string>("0")
   const [errors, setErrors] = useState<string>("0")
   const [data, setData] = useState<User[]>([])
-  const [page, setPage] = useState<number>(3)
+  const [page, setPage] = useState<number>(1)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const errorsDebounced = useDebouncedValue(errors)
   const seedDebounced = useDebouncedValue(seed)
 
-  const fetchUsers = async (pageNum: number) => {
+  const fetchUsers = async (pageNum: number, first?: boolean) => {
     const response = await fetch(
       `/api/generateUsers?region=${region}&errors=${errorsDebounced}&seed=${seedDebounced}&page=${pageNum}`
     )
     const newData = await response.json()
+    if (first) {
+      setData(newData.users)
+      return
+    }
     setData((prev) => [...prev, ...newData.users])
     setHasMore(newData.users.length > 0)
   }
@@ -33,8 +39,8 @@ export default function Home() {
 
   const firstLoad = async () => {
     setIsLoading(true)
-    setData([])
-    await fetchUsers(1)
+    setPage(3)
+    await fetchUsers(1, true)
     await fetchUsers(2)
     setIsLoading(false)
   }
@@ -112,13 +118,7 @@ export default function Home() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {data.map((item, index) => (
-                <tr key={item.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.fullName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.address}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.phone}</td>
-                </tr>
+                <TableContentRow key={item.id} user={item} index={index} />
               ))}
             </tbody>
           </table>
