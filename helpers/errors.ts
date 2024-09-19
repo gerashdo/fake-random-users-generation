@@ -20,6 +20,22 @@ const getErrorType = (randomNumber: number, str: string): ErrorType => {
   return ErrorType.DELETE
 }
 
+export const generateErrorsByProbability = (rng: seedrandom.PRNG, probability: number, fields: string[]) => {
+  const fieldCount = fields.length
+  if (rng() < probability) {
+    const fieldIndex = Math.floor(rng() * fieldCount)
+    fields[fieldIndex] = applyErrors(fields[fieldIndex], rng, 1)
+  }
+}
+
+export const generateErrorsByCount = (rng: seedrandom.PRNG, errorCount: number, fields: string[]) => {
+  const fieldCount = fields.length
+  for (let i = 0; i < errorCount; i++) {
+    const fieldIndex = Math.floor(rng() * fieldCount)
+    fields[fieldIndex] = applyErrors(fields[fieldIndex], rng, 1)
+  }
+}
+
 export const applyErrors = (input: string, rng: seedrandom.PRNG, errorCount: number): string => {
   let output = input
 
@@ -43,8 +59,4 @@ export const applyErrors = (input: string, rng: seedrandom.PRNG, errorCount: num
   }
 
   return output
-}
-
-export const getRemainingErrors = (errorCount: number, fields: string[]): number => {
-  return errorCount < fields.join('').length ? errorCount : fields.join('').length
 }

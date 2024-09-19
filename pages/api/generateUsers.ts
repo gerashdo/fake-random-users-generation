@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import seedrandom from 'seedrandom'
 import { allFakers } from '@faker-js/faker'
-import { applyErrors, getRemainingErrors } from '@/helpers/errors'
+import { generateErrorsByCount, generateErrorsByProbability } from '@/helpers/errors'
 import { generateFakeUserData } from '@/helpers/userGeneration'
 import { User } from '@/interfaces/user'
 import { Region } from '@/interfaces/region'
@@ -21,12 +21,11 @@ const generateRandomUser = (
 
   let {fullName, address, phone} = generateFakeUserData(faker)
   const fields = [fullName, address, phone]
-  const remainingErrors = getRemainingErrors(errorCount, fields)
-  const fieldCount = fields.length
 
-  for (let i = 0; i < remainingErrors; i++) {
-    const fieldIndex = Math.floor(rng() * fieldCount)
-    fields[fieldIndex] = applyErrors(fields[fieldIndex], rng, 1)
+  if (errorCount > 0 && errorCount < 1) {
+    generateErrorsByProbability(rng, errorCount, fields)
+  } else if (errorCount >= 1) {
+    generateErrorsByCount(rng, errorCount, fields)
   }
 
   [fullName, address, phone] = fields
@@ -41,7 +40,7 @@ const generateRandomUser = (
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { region = 'en_US', seed = '0', page = '1', errors = '0' } = req.query as Record<string, string>
-  const errorCount = parseInt(errors)
+  const errorCount = Number(errors)
   const pageNumber = parseInt(page)
 
   const users: User[] = []
